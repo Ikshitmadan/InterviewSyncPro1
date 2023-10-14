@@ -1,0 +1,183 @@
+body{
+  width: available;
+  height: available;
+}
+
+.container{
+  width: available;
+  height: available;
+}
+
+.leftpane{
+  width: 25%;
+  min-width: 350px;
+  height: available;
+  min-height: 400px;
+  float: left;
+  border-collapse: collapse;
+}
+
+.middlepane{
+ width: 50%;
+ min-width: 800px;
+ height: available;
+ min-height: 650px;
+ float: left;
+ border-collapse: collapse;
+}
+
+.rightpane{
+  width: available;
+  height: available;
+  position: relative;
+  margin-left: 75%;
+  border-collapse: collapse;
+}
+
+
+.room {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100vh;
+  padding: 10px 10px 20px;
+}
+
+.roomSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.languageFieldWrapper {
+  padding: 2px 6px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.languageField {
+  padding: 6px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  outline: none;
+  text-transform: capitalize;
+}
+
+.roomCodeEditor {
+  margin-top: 10px;
+  flex: 1;
+  border-radius: 5px;
+}
+.roomSidebarCopyBtn{
+  width: 100px;
+}
+
+.roomSidebarBtn {
+  font-size: 75%;
+  font-weight: bold;
+  padding: 8px 15px;
+  background-color: white;
+  border: 1px solid black;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.45s ease-in-out 0.05s;
+}
+
+.roomSidebarBtn:hover {
+  color: white;
+  background-color: black;
+}
+
+.navbarCenter{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.roomSidebarUsersWrapper {
+  margin: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.roomSidebarUsers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.roomSidebarUsersEach {
+  display: grid;
+  justify-items: center;
+}
+
+.roomSidebarUsersEachAvatar {
+  color: white;
+  border-radius: 5px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 5px;
+  font-size: small;
+  display: grid;
+  place-items: center;
+}
+
+.roomSidebarUsersEachName {
+  font-weight: bold;
+  font-size: small;
+}
+
+@media screen and (min-width: 991px) {
+  .room {
+    flex-direction: row;
+  }
+
+  .roomSidebar {
+    flex: 0.25;
+  }
+
+  .roomSidebar>*:nth-child(2) {
+    margin-top: auto;
+  }
+
+  .roomCodeEditor {
+    flex: 0.75;
+  }
+}
+
+.bt {
+  background-color: yellow;
+  color: black;
+  text-align: center;
+  font-size: 15px;
+  padding: 20px;
+  border-radius: 15px;
+  border: 3px dashed blue;
+}
+
+.op{
+  display: flex;
+  justify-content: center;
+}
+
+#input{
+  height: 100px;
+  width: 300px;
+  padding: 10px;
+  max-width: 100%;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
+#output{
+  width: 500px;
+  padding: 10px;
+  max-width: 100%;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
