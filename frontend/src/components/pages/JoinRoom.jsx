@@ -24,6 +24,9 @@ const JoinRoom = () => {
 
     const handleSubmit = useCallback((e)=>{
         e.preventDefault();
+
+
+        console.log('hand;e submit');
         if (!validate(roomId)) {
             toast.error('Invalid roomID');
             return;
@@ -32,13 +35,24 @@ const JoinRoom = () => {
             toast.error('Please enter username');
             return;
         }
-        socket.emit('room:join', {username, roomId})
+
+        
+        localStorage.setItem('username',username);
+
+        console.log(roomId);
+        navigate(`/room/${roomId}`, { state: { username } })
     },[username,roomId,socket])
     const handleJoinRoom = useCallback((data) =>{
         const {username, roomId} = data
+
+        localStorage.setItem('username',username);
+
+        console.log(roomId);
         navigate(`/room/${roomId}`, { state: { username } })
      },[navigate])
      useEffect(() =>{
+
+        console.log('hi');
         socket.on('room:join',handleJoinRoom);
         return () =>{
           socket.off('room:join')

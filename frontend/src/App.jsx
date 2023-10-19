@@ -6,6 +6,7 @@ import JoinRoom from './components/pages/JoinRoom'
 import Room from './components/pages/Room'
 import Modal from './components/Modal/Modal'
 import { LoginContext } from './context/LoginContext'
+import { PrivateRoutes } from './PrivateRoutes'
 
 
 const App = () => {
@@ -19,7 +20,12 @@ const App = () => {
                     <Route path='/' element={<JoinRoom />} />
                     <Route path='/login' element={<Singnin />} />
                     <Route path='/register' element={<Signup />} />
+
+                    <Route element={<PrivateRoutes/>}>
+                       
                     <Route path='/room/:roomId' element={<Room />} />
+
+                    </Route>
                 </Routes>
                 {modalOpen && <Modal setModalOpen={setModalOpen}></Modal>}
             </LoginContext.Provider>

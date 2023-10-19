@@ -3,7 +3,7 @@ import AceEditor from 'react-ace'
 import { useNavigate, useParams } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import './Room.css'
-//import io from 'socket.io-client'
+import io from 'socket.io-client'
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-typescript";
 import "ace-builds/src-noconflict/mode-python";
@@ -19,24 +19,27 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
 import { ChatBot } from '../ChatBot'
-import { useSocket } from '../../context/SocketProvider'
+// import { useSocket } from '../../context/SocketProvider'
 import peer from "../../services/peer";
 import ReactPlayer from "react-player";
 import RoomHeader from '../Layout/RoomHeader'
 
 const Room = () => {
-    // const [socket,setsocket]=useState();
-    // useEffect(()=>{
-    //             const socket = io('http://localhost:8080');
-    //     console.log(socket);
-    //    setsocket(socket)      
-    //             return ()=>{
-    //     setsocket(null);
-    //             }
-    //         },[])
+
+
+    const [socket,setsocket]=useState(null);
+    useEffect(()=>{
+                const socket = io('http://localhost:8080');
+        console.log(socket);
+       setsocket(socket)      
+                return ()=>{
+        setsocket(null);
+                }
+            },[])
     const navigate = useNavigate();
-    const socket = useSocket();
     const { roomId } = useParams()
+
+    
     const [language, setLanguage] = useState('javascript');
     const [codeKeyBinding, setCodeKeyBinding] = useState(undefined);
     const [fetchedUsers, setFetchedUsers] = useState([]);
@@ -56,6 +59,9 @@ const Room = () => {
     const handleLanguage = (e) => {
         setLanguage(e.target.value);
     }
+
+
+
     const handleCodeKeyBinding = (e) => {
         setCodeKeyBinding(e.target.value === 'default' ? undefined : e.target.value);
     }
@@ -99,14 +105,48 @@ const Room = () => {
             socket.on('inputchange', (inputData) => {
                 setinput(inputData)
             })
+socket.on('connected',(users)=>{
+ const arrayData=JSON.parse(users);
+ console.log(arrayData)
+ ;
+
+ setFetchedUsers([...arrayData])
+})
+           
         }
     })
 
+    console.log(fetchedUsers);
+
+
+    const UsersExcept=fetchedUsers.filter((user)=>user!=localStorage.getItem('username'))
+console.log();
+    let other='NA';
+    if(localStorage.getItem('username') && UsersExcept.length!=0){
+other=UsersExcept[0];
+    }
     useEffect(() => {
         if (output && socket) {
             socket.emit('outputchange', output);
         }
     }, [output, socket])
+
+    useEffect(()=>{
+
+        if(socket && localStorage.getItem('username')){
+
+
+            console.log("joiing sending ");
+const username=localStorage.getItem('username');
+            socket.emit('joined',{
+                roomId,
+                username
+            });
+        }
+
+
+
+    },[socket])
 
     function InputHandler(event) {
         socket.emit('inputchange', event.target.value);
@@ -183,72 +223,72 @@ const Room = () => {
         },
         [socket]
     );
-    const sendStreams = useCallback(() => {
-        for (const track of myStream.getTracks()) {
-            peer.peer.addTrack(track, myStream);
-        }
-    }, [myStream])
-    const handleCallAccepted = useCallback(
-        ({ from, ans }) => {
-            peer.setLocalDescription(ans);
-            console.log("Call Accepted");
-            sendStreams();
-        },
-        [sendStreams]
-    );
+    // const sendStreams = useCallback(() => {
+    //     for (const track of myStream.getTracks()) {
+    //         peer.peer.addTrack(track, myStream);
+    //     }
+    // }, [myStream])
+    // const handleCallAccepted = useCallback(
+    //     ({ from, ans }) => {
+    //         peer.setLocalDescription(ans);
+    //         console.log("Call Accepted");
+    //         sendStreams();
+    //     },
+    //     [sendStreams]
+    // );
 
     const handleLeave = () => {
         socket.disconnect()
         !socket.connected && navigate('/', { replace: true, state: {} })
     }
 
-    const handleNegoNeeded = useCallback(async () => {
-        const offer = await peer.getOffer();
-        socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
-    }, [socket, remoteSocketId]);
-    useEffect(() => {
-        peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
-        return () => {
-            peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
-        };
-    }, [handleNegoNeeded]);
-    const handleNegoNeedIncoming = useCallback(async ({ from, offer }) => {
-        const ans = await peer.getAnswer(offer);
-        socket.emit("peer:nego:done", { to: from, ans });
-    },
-        [socket]
-    );
-    const handleNegoNeedFinal = useCallback(async ({ ans }) => {
-        await peer.setLocalDescription(ans);
-    }, []);
-    useEffect(() => {
-        peer.peer.addEventListener("track", async (ev) => {
-            const RemoteStream = ev.streams;
-            console.log("GOT TRACKS!!")
-            setRemoteStream(RemoteStream[0]);
-        });
-    }, []);
-    useEffect(() => {
-        socket.on("user:joined", handleUserJoined);
-        socket.on("incoming:call", handleIncomingCall);
-        socket.on("call:accepted", handleCallAccepted);
-        socket.on("peer:nego:needed", handleNegoNeedIncoming);
-        socket.on("peer:nego:final", handleNegoNeedFinal);
-        return () => {
-            socket.off("user:joined", handleUserJoined);
-            socket.off("incoming:call", handleIncomingCall);
-            socket.off("call:accepted", handleCallAccepted);
-            socket.off("peer:nego:needed", handleNegoNeedIncoming);
-            socket.off("peer:nego:final", handleNegoNeedFinal);
-        };
-    }, [
-        socket,
-        handleUserJoined,
-        handleIncomingCall,
-        handleCallAccepted,
-        handleNegoNeedIncoming,
-        handleNegoNeedFinal,
-    ]);
+    // const handleNegoNeeded = useCallback(async () => {
+    //     const offer = await peer.getOffer();
+    //     socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+    // }, [socket, remoteSocketId]);
+    // useEffect(() => {
+    //     peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
+    //     return () => {
+    //         peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
+    //     };
+    // }, [handleNegoNeeded]);
+    // const handleNegoNeedIncoming = useCallback(async ({ from, offer }) => {
+    //     const ans = await peer.getAnswer(offer);
+    //     socket.emit("peer:nego:done", { to: from, ans });
+    // },
+    //     [socket]
+    // );
+    // const handleNegoNeedFinal = useCallback(async ({ ans }) => {
+    //     await peer.setLocalDescription(ans);
+    // }, []);
+    // useEffect(() => {
+    //     peer.peer.addEventListener("track", async (ev) => {
+    //         const RemoteStream = ev.streams;
+    //         console.log("GOT TRACKS!!")
+    //         setRemoteStream(RemoteStream[0]);
+    //     });
+    // }, []);
+    // useEffect(() => {
+    //     socket.on("user:joined", handleUserJoined);
+    //     socket.on("incoming:call", handleIncomingCall);
+    //     socket.on("call:accepted", handleCallAccepted);
+    //     socket.on("peer:nego:needed", handleNegoNeedIncoming);
+    //     socket.on("peer:nego:final", handleNegoNeedFinal);
+    //     return () => {
+    //         socket.off("user:joined", handleUserJoined);
+    //         socket.off("incoming:call", handleIncomingCall);
+    //         socket.off("call:accepted", handleCallAccepted);
+    //         socket.off("peer:nego:needed", handleNegoNeedIncoming);
+    //         socket.off("peer:nego:final", handleNegoNeedFinal);
+    //     };
+    // }, [
+    //     socket,
+    //     handleUserJoined,
+    //     handleIncomingCall,
+    //     handleCallAccepted,
+    //     handleNegoNeedIncoming,
+    //     handleNegoNeedFinal,
+    // ]);
 
 
 
@@ -299,7 +339,7 @@ const Room = () => {
                                     )
                                 }
                             </div>
-                            <ChatBot socket={socket} />
+                            <ChatBot socket={socket} other={other} />
                         </div>
                     </div>
                 </div>

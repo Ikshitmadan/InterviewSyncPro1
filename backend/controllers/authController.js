@@ -24,6 +24,7 @@ exports.registerController = async (req, res) => {
         message: "Sorry a user with this email already exists",
       });
     }
+    
     //register user
     const salt = await bcrypt.genSalt(10);
     const securePassword = await bcrypt.hash(req.body.password, salt);

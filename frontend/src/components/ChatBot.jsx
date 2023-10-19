@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { AiOutlineSend } from 'react-icons/ai'
 
-export const ChatBot = ({ socket }) => {
+export const ChatBot = ({ socket,other }) => {
+
+  console.log(socket);
   const [Messgaes, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(true);
   useEffect(() => {
-    if (socket !== null) {
+    if (socket != null) {
       socket.on('recieve', (messageData) => {
 
         setMessages([...Messgaes, { ...messageData, self: false }]);
@@ -25,10 +27,9 @@ export const ChatBot = ({ socket }) => {
         <div className={open ? "w-60 h-80  flex flex-col border shadow-md bg-white" : "flex flex-col border shadow-md bg-white"}>
           <div className="flex items-center justify-between border-b p-2">
             <div className="flex items-center">
-              <img className="rounded-full w-10 h-10" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt='img' />
               <div className="pl-2">
                 <div className="font-semibold">
-                  <Link className="hover:underline" to="#">John do</Link>
+                  <Link className="hover:underline" to="#">{other}</Link>
                 </div>
                 <div className="text-xs text-gray-600">Online</div>
               </div>
